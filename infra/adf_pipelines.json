@@ -1,0 +1,81 @@
+{
+  "adf_pipelines": [
+    {
+      "name": "pl_ingestion_sap_daily",
+      "description": "Daily orchestration: SAP ingestion → Work transformation → Serving",
+      "trigger": {
+        "type": "ScheduleTrigger",
+        "recurrence": { "frequency": "Day", "interval": 1, "startTime": "06:00" }
+      },
+      "activities": [
+        {
+          "name": "nb_landing_sap_equipos",
+          "type": "FabricNotebook",
+          "parameters": {
+            "environment": "@pipeline().parameters.environment",
+            "execution_id": "@pipeline().RunId"
+          }
+        },
+        {
+          "name": "nb_landing_sap_costos",
+          "type": "FabricNotebook",
+          "dependsOn": ["nb_landing_sap_equipos"],
+          "parameters": {
+            "environment": "@pipeline().parameters.environment",
+            "execution_id": "@pipeline().RunId",
+            "fecha_inicio": "@formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd')",
+            "fecha_fin":    "@formatDateTime(utcNow(), 'yyyyMMdd')"
+          }
+        },
+        {
+          "name": "nb_landing_sharepoint",
+          "type": "FabricNotebook",
+          "dependsOn": [],
+          "parameters": {
+            "environment": "@pipeline().parameters.environment",
+            "execution_id": "@pipeline().RunId"
+          }
+        },
+        {
+          "name": "nb_work_dim_equipos",
+          "type": "FabricNotebook",
+          "dependsOn": ["nb_landing_sap_equipos"],
+          "parameters": {
+            "environment": "@pipeline().parameters.environment",
+            "execution_id": "@pipeline().RunId"
+          }
+        },
+        {
+          "name": "nb_work_fact_rdp",
+          "type": "FabricNotebook",
+          "dependsOn": ["nb_landing_sharepoint", "nb_work_dim_equipos"],
+          "parameters": {
+            "environment": "@pipeline().parameters.environment",
+            "execution_id": "@pipeline().RunId"
+          }
+        },
+        {
+          "name": "nb_work_costos_totales",
+          "type": "FabricNotebook",
+          "dependsOn": ["nb_landing_sap_costos", "nb_work_dim_equipos"],
+          "parameters": {
+            "environment": "@pipeline().parameters.environment",
+            "execution_id": "@pipeline().RunId"
+          }
+        },
+        {
+          "name": "nb_work_live_serving",
+          "type": "FabricNotebook",
+          "dependsOn": ["nb_work_fact_rdp", "nb_work_costos_totales"],
+          "parameters": {
+            "environment": "@pipeline().parameters.environment",
+            "execution_id": "@pipeline().RunId"
+          }
+        }
+      ],
+      "parameters": {
+        "environment": { "type": "string", "defaultValue": "prod" }
+      }
+    }
+  ]
+}

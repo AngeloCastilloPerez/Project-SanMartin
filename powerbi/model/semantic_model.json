@@ -1,0 +1,207 @@
+{
+  "model": {
+    "name": "SanMartin_SemanticModel",
+    "description": "Mining operations BI model for San Martín Contratistas Generales S.A.",
+    "defaultMode": "Import",
+    "tables": [
+      {
+        "name": "fact_rdp",
+        "description": "Rendimiento Diario de Producción — production KPIs per equipment per day",
+        "columns": [
+          { "name": "RDP_ID",      "dataType": "int64",   "isKey": true },
+          { "name": "FECHA",       "dataType": "dateTime" },
+          { "name": "EQUIPO_ID",   "dataType": "string" },
+          { "name": "MINA_ID",     "dataType": "string" },
+          { "name": "ACTIVIDAD_ID","dataType": "string" },
+          { "name": "TURNO",       "dataType": "string" },
+          { "name": "HM",          "dataType": "decimal" },
+          { "name": "HORAS",       "dataType": "decimal" },
+          { "name": "VIAJES",      "dataType": "int64" },
+          { "name": "METROS",      "dataType": "decimal" },
+          { "name": "TONELAJE",    "dataType": "decimal" },
+          { "name": "DISTANCIA",   "dataType": "decimal" },
+          { "name": "V_HR",        "dataType": "decimal" },
+          { "name": "MTS_HRS",     "dataType": "decimal" },
+          { "name": "TN_DIST",     "dataType": "decimal" },
+          { "name": "TN_VJ",       "dataType": "decimal" }
+        ]
+      },
+      {
+        "name": "fact_perforacion",
+        "description": "Drilling fact table",
+        "columns": [
+          { "name": "PERF_ID",     "dataType": "int64",   "isKey": true },
+          { "name": "FECHA",       "dataType": "dateTime" },
+          { "name": "EQUIPO_ID",   "dataType": "string" },
+          { "name": "MINA_ID",     "dataType": "string" },
+          { "name": "TURNO",       "dataType": "string" },
+          { "name": "METROS_PERF", "dataType": "decimal" },
+          { "name": "HORAS_PERF",  "dataType": "decimal" },
+          { "name": "MTS_HRS",     "dataType": "decimal" }
+        ]
+      },
+      {
+        "name": "Costos_Totales",
+        "description": "Total equipment costs from SAP (ZWS_GET_KOB1)",
+        "columns": [
+          { "name": "COSTO_ID",    "dataType": "int64",   "isKey": true },
+          { "name": "FECHA",       "dataType": "dateTime" },
+          { "name": "EQUIPO_ID",   "dataType": "string" },
+          { "name": "TIPO_COSTO",  "dataType": "string" },
+          { "name": "CANTIDAD",    "dataType": "decimal" },
+          { "name": "MONTO",       "dataType": "decimal" },
+          { "name": "MONEDA",      "dataType": "string" }
+        ]
+      },
+      {
+        "name": "dim_equipos",
+        "description": "Equipment dimension — enriched from SAP + master tables",
+        "columns": [
+          { "name": "EQUIPO_ID",           "dataType": "string", "isKey": true },
+          { "name": "DESCRIPCION",         "dataType": "string" },
+          { "name": "EMPRESA_CONTRATISTA", "dataType": "string" },
+          { "name": "TIPO_DE_FLOTA",       "dataType": "string" },
+          { "name": "NIVEL_I",             "dataType": "string" },
+          { "name": "NIVEL_II",            "dataType": "string" },
+          { "name": "NIVEL_III",           "dataType": "string" },
+          { "name": "MODELO",              "dataType": "string" },
+          { "name": "FABRICANTE",          "dataType": "string" },
+          { "name": "CAPACIDAD_TN",        "dataType": "decimal" }
+        ]
+      },
+      {
+        "name": "dim_calendario",
+        "description": "Date dimension for time intelligence",
+        "columns": [
+          { "name": "FECHA",        "dataType": "dateTime", "isKey": true },
+          { "name": "DIA",          "dataType": "int64" },
+          { "name": "MES",          "dataType": "int64" },
+          { "name": "ANIO",         "dataType": "int64" },
+          { "name": "TRIMESTRE",    "dataType": "int64" },
+          { "name": "NOM_MES",      "dataType": "string" },
+          { "name": "PERIODO",      "dataType": "string" },
+          { "name": "ES_FIN_SEMANA","dataType": "boolean" }
+        ]
+      },
+      {
+        "name": "dim_actividad",
+        "columns": [
+          { "name": "ACTIVIDAD_ID", "dataType": "string", "isKey": true },
+          { "name": "DESCRIPCION",  "dataType": "string" },
+          { "name": "CATEGORIA",    "dataType": "string" }
+        ]
+      },
+      {
+        "name": "dim_mina",
+        "columns": [
+          { "name": "MINA_ID",      "dataType": "string", "isKey": true },
+          { "name": "NOMBRE",       "dataType": "string" },
+          { "name": "TIPO_MINA",    "dataType": "string" }
+        ]
+      },
+      {
+        "name": "dim_dM_factordiario",
+        "description": "Daily factor (Factor K / PB) for KPI normalization",
+        "columns": [
+          { "name": "FECHA",        "dataType": "dateTime" },
+          { "name": "EQUIPO_ID",    "dataType": "string" },
+          { "name": "FACTOR_K",     "dataType": "decimal" },
+          { "name": "FACTOR_PB",    "dataType": "decimal" }
+        ]
+      },
+      {
+        "name": "dim_targets",
+        "description": "Production and cost targets per period",
+        "columns": [
+          { "name": "TARGET_ID",    "dataType": "int64",   "isKey": true },
+          { "name": "PERIODO",      "dataType": "string" },
+          { "name": "TIPO_DE_FLOTA","dataType": "string" },
+          { "name": "HM_TARGET",    "dataType": "decimal" },
+          { "name": "TN_TARGET",    "dataType": "decimal" },
+          { "name": "COSTO_TARGET", "dataType": "decimal" },
+          { "name": "RDP_TARGET",   "dataType": "decimal" }
+        ]
+      },
+      {
+        "name": "dim_tecnologia",
+        "columns": [
+          { "name": "TECNOLOGIA_ID","dataType": "string", "isKey": true },
+          { "name": "DESCRIPCION",  "dataType": "string" },
+          { "name": "CATEGORIA",    "dataType": "string" }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "fact_rdp → dim_equipos",
+        "fromTable": "fact_rdp",       "fromColumn": "EQUIPO_ID",
+        "toTable":   "dim_equipos",    "toColumn":   "EQUIPO_ID",
+        "crossFilteringBehavior": "singleDirection",
+        "isActive": true
+      },
+      {
+        "name": "fact_rdp → dim_calendario",
+        "fromTable": "fact_rdp",       "fromColumn": "FECHA",
+        "toTable":   "dim_calendario", "toColumn":   "FECHA",
+        "crossFilteringBehavior": "singleDirection",
+        "isActive": true
+      },
+      {
+        "name": "fact_rdp → dim_mina",
+        "fromTable": "fact_rdp",       "fromColumn": "MINA_ID",
+        "toTable":   "dim_mina",       "toColumn":   "MINA_ID",
+        "crossFilteringBehavior": "singleDirection",
+        "isActive": true
+      },
+      {
+        "name": "fact_rdp → dim_actividad",
+        "fromTable": "fact_rdp",       "fromColumn": "ACTIVIDAD_ID",
+        "toTable":   "dim_actividad",  "toColumn":   "ACTIVIDAD_ID",
+        "crossFilteringBehavior": "singleDirection",
+        "isActive": true
+      },
+      {
+        "name": "fact_perforacion → dim_equipos",
+        "fromTable": "fact_perforacion","fromColumn": "EQUIPO_ID",
+        "toTable":   "dim_equipos",    "toColumn":   "EQUIPO_ID",
+        "crossFilteringBehavior": "singleDirection",
+        "isActive": true
+      },
+      {
+        "name": "fact_perforacion → dim_calendario",
+        "fromTable": "fact_perforacion","fromColumn": "FECHA",
+        "toTable":   "dim_calendario", "toColumn":   "FECHA",
+        "crossFilteringBehavior": "singleDirection",
+        "isActive": true
+      },
+      {
+        "name": "Costos_Totales → dim_equipos",
+        "fromTable": "Costos_Totales", "fromColumn": "EQUIPO_ID",
+        "toTable":   "dim_equipos",    "toColumn":   "EQUIPO_ID",
+        "crossFilteringBehavior": "singleDirection",
+        "isActive": true
+      },
+      {
+        "name": "Costos_Totales → dim_calendario",
+        "fromTable": "Costos_Totales", "fromColumn": "FECHA",
+        "toTable":   "dim_calendario", "toColumn":   "FECHA",
+        "crossFilteringBehavior": "singleDirection",
+        "isActive": true
+      },
+      {
+        "name": "dim_dM_factordiario → dim_equipos",
+        "fromTable": "dim_dM_factordiario","fromColumn": "EQUIPO_ID",
+        "toTable":   "dim_equipos",    "toColumn":   "EQUIPO_ID",
+        "crossFilteringBehavior": "singleDirection",
+        "isActive": true
+      },
+      {
+        "name": "dim_dM_factordiario → dim_calendario",
+        "fromTable": "dim_dM_factordiario","fromColumn": "FECHA",
+        "toTable":   "dim_calendario", "toColumn":   "FECHA",
+        "crossFilteringBehavior": "singleDirection",
+        "isActive": true
+      }
+    ]
+  }
+}
