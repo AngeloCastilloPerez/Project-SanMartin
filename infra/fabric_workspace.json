@@ -1,0 +1,24 @@
+{
+  "fabric_workspace": {
+    "name": "sanmartin-fabric-bi",
+    "description": "BI/Data Engineering workspace for San Martín Contratistas Generales S.A.",
+    "capacity_sku": "F64",
+    "region": "eastus2",
+    "lakehouses": [
+      { "name": "landing",   "description": "Raw ingestion zone" },
+      { "name": "work",      "description": "Cleansed Parquet layer" },
+      { "name": "work_live", "description": "Serving Delta layer for Power BI" },
+      { "name": "logs",      "description": "Notebook execution logs" }
+    ],
+    "notebooks": [
+      "nb_landing_sap_equipos",
+      "nb_landing_sap_costos",
+      "nb_landing_sharepoint",
+      "nb_work_dim_equipos",
+      "nb_work_fact_rdp",
+      "nb_work_costos_totales",
+      "nb_work_live_serving"
+    ],
+    "environments": ["dev", "qa", "prod"]
+  }
+}

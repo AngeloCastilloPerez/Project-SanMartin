@@ -1,0 +1,23 @@
+# =============================================================================
+# requirements.txt — sanmartin-fabric-bi
+# Core dependencies for SAP integration, data processing, and Azure storage
+# =============================================================================
+
+# SAP Web Services (SOAP)
+zeep==4.2.1
+
+# HTTP client (used by zeep and SharePoint integration)
+requests==2.31.0
+
+# Data processing
+pandas==2.2.2
+openpyxl==3.1.2          # Excel file support
+
+# Azure / ADLS Gen2 / OneLake storage
+azure-storage-file-datalake==12.14.0
+
+# SQL Server connectivity
+pyodbc==5.1.0
+
+# PySpark (local development / unit tests — provided by Fabric runtime in production)
+pyspark==3.5.1

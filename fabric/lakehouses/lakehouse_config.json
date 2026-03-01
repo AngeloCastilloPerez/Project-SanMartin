@@ -1,0 +1,60 @@
+{
+  "lakehouses": [
+    {
+      "name": "landing",
+      "description": "Raw ingestion zone — JSON, Excel, CSV from SAP and SharePoint",
+      "containers": [
+        { "name": "sap",        "subfolders": ["equipos", "costos", "inventario", "partes", "servicios", "movimientos"] },
+        { "name": "sharepoint", "subfolders": ["rdp", "perforacion"] },
+        { "name": "master_tables" }
+      ],
+      "retention_days": 90
+    },
+    {
+      "name": "work",
+      "description": "Cleansed and normalized layer — Parquet files, medallion Work zone",
+      "containers": [
+        { "name": "dim_equipos" },
+        { "name": "dim_calendario" },
+        { "name": "dim_actividad" },
+        { "name": "dim_mina" },
+        { "name": "dim_targets" },
+        { "name": "dim_tecnologia" },
+        { "name": "fact_rdp" },
+        { "name": "fact_perforacion" },
+        { "name": "costos_totales" }
+      ],
+      "retention_days": 365
+    },
+    {
+      "name": "work_live",
+      "description": "Serving layer — Delta tables for Power BI DirectQuery / Import",
+      "containers": [
+        { "name": "dim_equipos" },
+        { "name": "dim_calendario" },
+        { "name": "dim_actividad" },
+        { "name": "dim_mina" },
+        { "name": "dim_targets" },
+        { "name": "dim_tecnologia" },
+        { "name": "fact_rdp" },
+        { "name": "fact_perforacion" },
+        { "name": "costos_totales" }
+      ],
+      "retention_days": -1
+    },
+    {
+      "name": "logs",
+      "description": "Execution logs per notebook run",
+      "containers": [
+        { "name": "nb_landing_sap_equipos" },
+        { "name": "nb_landing_sap_costos" },
+        { "name": "nb_landing_sharepoint" },
+        { "name": "nb_work_dim_equipos" },
+        { "name": "nb_work_fact_rdp" },
+        { "name": "nb_work_costos_totales" },
+        { "name": "nb_work_live_serving" }
+      ],
+      "retention_days": 180
+    }
+  ]
+}

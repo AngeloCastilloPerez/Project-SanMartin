@@ -1,0 +1,124 @@
+// =============================================================================
+// DAX Measures — San Martín Contratistas Generales S.A.
+// Power BI Semantic Model: Mining Operations KPIs
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// Base aggregations
+// ---------------------------------------------------------------------------
+
+HM_Total =
+    SUM ( fact_rdp[HM] )
+
+Combustible_gal =
+    CALCULATE (
+        SUM ( Costos_Totales[CANTIDAD] ),
+        Costos_Totales[TIPO_COSTO] = "COMBUSTIBLE"
+    )
+
+Produccion_TN =
+    SUM ( fact_rdp[TONELAJE] )
+
+Total_Viajes =
+    SUM ( fact_rdp[VIAJES] )
+
+Costo_Total =
+    SUM ( Costos_Totales[MONTO] )
+
+Metros_Perforados =
+    SUM ( fact_perforacion[METROS_PERF] )
+
+Horas_Perforacion =
+    SUM ( fact_perforacion[HORAS_PERF] )
+
+// ---------------------------------------------------------------------------
+// KPI Ratios (RDP)
+// ---------------------------------------------------------------------------
+
+RDP_gal_HM =
+    DIVIDE ( [Combustible_gal], [HM_Total], BLANK () )
+
+Viajes_por_hora =
+    DIVIDE ( [Total_Viajes], [HM_Total], BLANK () )
+
+MTS_por_HRS =
+    DIVIDE ( [Metros_Perforados], [Horas_Perforacion], BLANK () )
+
+TN_por_viaje =
+    DIVIDE ( [Produccion_TN], [Total_Viajes], BLANK () )
+
+// ---------------------------------------------------------------------------
+// Cost KPIs
+// ---------------------------------------------------------------------------
+
+Costo_por_TN =
+    DIVIDE ( [Costo_Total], [Produccion_TN], BLANK () )
+
+Costo_Combustible =
+    CALCULATE (
+        SUM ( Costos_Totales[MONTO] ),
+        Costos_Totales[TIPO_COSTO] = "COMBUSTIBLE"
+    )
+
+Costo_Mantenimiento =
+    CALCULATE (
+        SUM ( Costos_Totales[MONTO] ),
+        Costos_Totales[TIPO_COSTO] = "MANTENIMIENTO"
+    )
+
+// ---------------------------------------------------------------------------
+// Factor K / PB
+// ---------------------------------------------------------------------------
+
+Factor_K_promedio =
+    AVERAGE ( dim_dM_factordiario[FACTOR_K] )
+
+Factor_PB_promedio =
+    AVERAGE ( dim_dM_factordiario[FACTOR_PB] )
+
+// ---------------------------------------------------------------------------
+// Ratio acumulado (YTD / MTD)
+// ---------------------------------------------------------------------------
+
+RDP_YTD =
+    CALCULATE (
+        [RDP_gal_HM],
+        DATESYTD ( dim_calendario[FECHA] )
+    )
+
+Produccion_TN_YTD =
+    CALCULATE (
+        [Produccion_TN],
+        DATESYTD ( dim_calendario[FECHA] )
+    )
+
+Costo_Total_MTD =
+    CALCULATE (
+        [Costo_Total],
+        DATESMTD ( dim_calendario[FECHA] )
+    )
+
+// ---------------------------------------------------------------------------
+// Target vs Actual
+// ---------------------------------------------------------------------------
+
+HM_vs_Target =
+    DIVIDE (
+        [HM_Total],
+        MAX ( dim_targets[HM_TARGET] ),
+        BLANK ()
+    )
+
+Produccion_vs_Target =
+    DIVIDE (
+        [Produccion_TN],
+        MAX ( dim_targets[TN_TARGET] ),
+        BLANK ()
+    )
+
+RDP_vs_Target =
+    DIVIDE (
+        [RDP_gal_HM],
+        MAX ( dim_targets[RDP_TARGET] ),
+        BLANK ()
+    )
